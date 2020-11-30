@@ -1,10 +1,31 @@
-pipeline {
-    agent any 
-    stages {
-        stage('Stage 1') {
-            steps {
-                echo 'Hello world!' 
+#!/usr/bin/env groovy
+
+//Default to nonprod vaule
+
+def ENVIRONMENT = 'nonprod'
+def TARGET_ACCOUNT = 'digital-nonprod (018578619640)'
+def JENKINS_AGENT_NODE = 'QAELinuxSlave'
+
+
+node {
+    checkout scm
+    withEnv([ "STACK_NAME=edl-${ENVIRONMENT}","TARGET_ACCOUNT=${TARGET_ACCOUNT}",
+                "ENVIRONMENT=${ENVIRONMENT}"]){
+        
+        currentBuild.displayName = "${TARGET_ACCOUNT}#${BUILD_NUMBER}"
+        currentBuild.description = "${TARGET_ACCOUNT}#${BUILD_NUMBER}"
+        
+        try {
+            stage ('show output') {
+                sh 'make show_output'
             }
+            stage ('touch whateva') {
+                sh '''
+                    make touch
+                '''
+            }
+        } catch(error) {
+            throw new Exception('Check console')
         }
     }
 }

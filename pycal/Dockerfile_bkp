@@ -1,0 +1,10 @@
+FROM python:3.6-slim
+MAINTAINER varunkumar032@gmail.com
+COPY . /python-test-calculator
+WORKDIR /python-test-calculator
+RUN export https_proxy=http://proxy.cloudops.np.tu-aws.com:3128
+RUN export http_proxy=http://proxy.cloudops.np.tu-aws.com:3128
+RUN export no_proxy=169.254.169.254,localhost,127.0.0.1,s3-ap-southeast-2.amazonaws.com,s3.ap-southeast-2.amazonaws.com,.da.np.tu-aws.com
+RUN pip install --no-cache-dir -r requirements.txt
+RUN ["pytest", "-v", "--junitxml=reports/result.xml"]
+CMD tail -f /dev/null
